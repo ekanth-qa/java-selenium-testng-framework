@@ -3,6 +3,7 @@ package com.ekanth.automation.stepDefinitions;
 import java.io.IOException;
 import java.util.List;
 
+import io.cucumber.java.After;
 import org.openqa.selenium.WebElement;
 import org.testng.Assert;
 
@@ -26,33 +27,24 @@ public class StepDefinitionImplementation extends BaseTest {
 	@Given("I landed on the Ecommerce page")
 	public void I_landed_on_the_Ecommerce_page() throws IOException
 	{
-		
+
 		landingPage = launchApplication();
+		System.out.println("LandingPage = " + landingPage);
 	}
 	
 	@Given ("^Logged in with username (.+) and password (.+)$")
 	public void Logged_in_with_username_and_password(String username, String password)
 	{
-		productcatalogue = landingpage.loginapplication(username, password);		
+		productcatalogue = landingPage.loginapplication(username, password);
 
 	}
 	
 	
-	@When("I add product ZARA COAT {string} from cart")
-	public void i_add_product_zara_coat_from_cart(String productName) throws InterruptedException {
+	@When("^I add product (.+) from cart$")
+	public void i_add_product_from_cart(String productName) throws InterruptedException {
 		List<WebElement> products = productcatalogue.getProductList();
 		productcatalogue.addProductToCart(productName);
-    
-		
 	}
-	
-//	@When("^i add product (.+) from cart$")
-//	public void i_add_product_from_cart(String productName) throws InterruptedException
-//	{
-//		List<WebElement> products = productcatalogue.getProductList();
-//		productcatalogue.addProductToCart(productName);
-//		throw new io.cucumber.java.PendingException();
-//	}
 	
 
 	@When("^Checkout (.+) and submit the order$")
@@ -65,9 +57,9 @@ public class StepDefinitionImplementation extends BaseTest {
  		//click on checkout button
 		PlaceOrderPage placeorder = mycart.clickCheckoutButton(); 
 		placeorder.personalInfo("123", "ekanth");
-		placeorder.secectTheCountry("india");
+		placeorder.secectTheCountry("ind");
 		
-		ConfirmationPage confirmationmessage = placeorder.submitOrder();
+		this.confirmationmessage = placeorder.submitOrder();
 		
 	}
 	
@@ -84,9 +76,15 @@ public class StepDefinitionImplementation extends BaseTest {
 	public void something_message_is_displayed(String string) throws Throwable
 	{
 		Assert.assertEquals(string, landingpage.getErrorMessage());
-		driver.quit();
 
 	}
-	
+
+	@After
+	public void tearDown() {
+		if(driver != null) {
+			driver.quit();
+			System.out.println("Browser closed");
+		}
+	}
 	
 }
